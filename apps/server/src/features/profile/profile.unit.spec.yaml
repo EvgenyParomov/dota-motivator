@@ -1,0 +1,26 @@
+feature: Профиль пользователя
+code: profile-unit
+description: >
+  Уточнения к profile.spec.yaml. Доменная валидация debtThreshold и
+  startingBalance.
+
+  Сценарии чтения/обновления через HTTP и онбординг — в
+  specs/profile.spec.yaml.
+
+specs-unit:
+
+  # validateDebtThreshold в profile/domain/profile.ts. Целочисленное
+  # неотрицательное. Дробное — отказ: считаем катки целыми для блокировки,
+  # хотя награды лотов могут быть дробными.
+  SetDebtThresholdUseCase:
+    - assert: сохраняет неотрицательное целое значение порога
+    - assert: отрицательное значение отклоняется доменной ошибкой InvalidDebtThreshold
+    - assert: дробное значение отклоняется
+
+  # validateStartingBalance. Используется при complete-onboarding.
+  # Допускаются отрицательные значения: пользователь может начать в долг
+  # (например, переезд из старой системы учёта). Отказ только на NaN/Infinity.
+  starting balance validation:
+    - assert: accepts negative starting balance
+    - assert: accepts zero starting balance
+    - assert: rejects NaN

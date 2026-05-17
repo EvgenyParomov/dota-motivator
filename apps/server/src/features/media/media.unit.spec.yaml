@@ -1,0 +1,20 @@
+feature: Загрузка медиа
+code: media-unit
+description: >
+  Уточнения к media.spec.yaml. Доменная валидация upload-параметров
+  (mime allowlist, размер).
+
+  HTTP сценарии presign и поведение MediaUrlResolver — в
+  specs/media.spec.yaml.
+
+specs-unit:
+
+  # validateUpload в media/domain/validation.ts. SVG и прочие
+  # потенциально опасные форматы не пропускаем — иконок-растров
+  # достаточно. Лимит размера = 1 МБ (для иконки больше — почти
+  # наверняка несжатое исходное фото).
+  Upload validation:
+    - assert: допускает image/png, image/jpeg, image/webp
+    - assert: отклоняет mimeType вне allowlist
+    - assert: отклоняет contentLength больше 1 МБ доменной ошибкой PayloadTooLarge
+    - assert: отклоняет нулевой или отрицательный размер

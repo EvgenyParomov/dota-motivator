@@ -1,0 +1,33 @@
+feature: Аутентификация
+code: auth-unit
+description: >
+  Уточнения к auth.spec.yaml. Чистые функции и парсеры Steam OpenID,
+  парсер ответа check_authentication, allowlist client_callback.
+
+  Сами сценарии входа/выхода и интеграция с БД — в specs/auth.spec.yaml.
+
+specs-unit:
+
+  # buildSteamLoginUrl и parseClaimedId — чистые функции домена
+  # (auth/domain/openid.ts). Сценарий старта потока (HTTP) — в e2e.
+  Steam OpenID протокол:
+    - assert: builder формирует Steam OpenID URL с openid.mode=checkid_setup и переданным return_to
+    - assert: builder включает state в return_to как query-параметр
+    - assert: parser извлекает steamId64 из claimed_id формата https://steamcommunity.com/openid/id/<id>
+    - assert: parser отклоняет claimed_id с нестандартным форматом
+
+  # parseIsValid разбирает key-value ответ Steam check_authentication.
+  # Реальный HTTP — в адаптере; здесь — только разбор тела.
+  SteamOpenIdVerifier:
+    - assert: валидный openid response подтверждается через check_authentication у Steam
+    - assert: response отклоняется когда Steam возвращает is_valid:false
+
+  # Формирование тела запроса check_authentication: тот же набор
+  # openid-параметров что пришёл от Steam, но mode=check_authentication.
+  verify payload:
+    - assert: builds check_authentication payload with same params
+
+  # Allowlist client_callback (см. auth.spec, защита от утечки
+  # handoff-токена на чужой сервер). Чистый matcher проверяется здесь.
+  Старт потока:
+    - assert: client_callback не из allowlist (только http://localhost:*) отклоняется с 400

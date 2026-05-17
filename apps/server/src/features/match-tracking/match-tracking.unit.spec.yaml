@@ -1,0 +1,18 @@
+feature: Трекинг матчей Dota
+code: match-tracking-unit
+description: >
+  Уточнения к match-tracking.spec.yaml. Парсинг и валидация GSI-события
+  и распознавание lobbyType (practice не считается).
+
+  Сценарии post_game/play-decision и идемпотентность по matchId —
+  в specs/match-tracking.spec.yaml.
+
+specs-unit:
+
+  # parseGsiMatchEvent и isCountableLobby в match-tracking/domain/gsi.ts.
+  # Practice/demo не списываются, но события сохраняются для статистики
+  # (отдельный счётчик, не «настоящая катка»).
+  Match event domain:
+    - assert: парсинг GsiMatchEvent отклоняет пустой matchId
+    - assert: парсинг GsiMatchEvent распознаёт фазы pre_game, game_in_progress, post_game
+    - assert: события с lobbyType practice игнорируются для списания

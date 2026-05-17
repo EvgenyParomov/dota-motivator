@@ -1,0 +1,19 @@
+feature: Баланс каток
+code: balance-unit
+description: >
+  Уточнения к balance.spec.yaml. Чистые доменные функции applyCredit,
+  applyDebit, canPlayMore.
+
+  Сценарии чтения/мутации через HTTP и атомарность транзакций — в
+  specs/balance.spec.yaml.
+
+specs-unit:
+
+  # Чистые функции в balance/domain/balance.ts. Граница canPlayMore
+  # (balance == -debtThreshold уже «нельзя») критична: следующая катка
+  # опустит баланс сверх допустимого, поэтому отсечка — на равенстве.
+  Balance domain:
+    - assert: applyCredit увеличивает баланс на сумму события
+    - assert: applyDebit уменьшает баланс на сумму события
+    - assert: canPlayMore возвращает true когда balance > -debtThreshold
+    - assert: canPlayMore возвращает false когда balance <= -debtThreshold

@@ -1,0 +1,30 @@
+{
+  "name": "dota-motivator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "server:dev": "pnpm --filter @dm/server dev",
+    "server:build": "pnpm --filter @dm/server build",
+    "server:test": "pnpm --filter @dm/server test",
+    "server:migrate": "pnpm --filter @dm/server migrate",
+    "desktop:dev": "pnpm --filter @dm/desktop dev",
+    "desktop:build": "pnpm --filter @dm/desktop build",
+    "desktop:test": "pnpm --filter @dm/desktop test",
+    "desktop:e2e": "pnpm --filter @dm/desktop e2e",
+    "shared:build": "pnpm --filter @dm/shared build",
+    "specs:check": "specward --specs \"{specs/*.spec.yaml,apps/**/*.spec.yaml,packages/**/*.spec.yaml}\" --tests \"**/*.spec.ts\"",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "specward": "^0.1.2",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@10.17.0",
+  "engines": {
+    "node": ">=22"
+  }
+}

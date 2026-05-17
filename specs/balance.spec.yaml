@@ -1,0 +1,40 @@
+feature: Баланс каток
+code: balance
+description: >
+  Текущий баланс каток пользователя и история событий баланса (для статистики
+  и аудита). Реализует порты для других фич:
+  - BalanceMutator: lot-execution кредитует, match-tracking дебетует.
+  - BalanceInitializer: profile создаёт начальную запись при онбординге.
+
+  Хранение: snapshot (поле balance в таблице balances) + полная история
+  в balance_events. Snapshot обновляется атомарно с событием.
+
+  Решение «можно ли играть» — чистая функция canPlayMore(balance, debtThreshold).
+  debtThreshold читается из profile через порт ProfileReader.
+
+  Чистые функции и доменные правила (canPlayMore, applyCredit/Debit) —
+  в balance.unit.spec.yaml.
+
+specs-e2e:
+
+  # GET /balance — основное чтение для UI: текущий баланс, порог долга
+  # и решение «можно ли играть» одной пачкой, чтобы не делать второй
+  # запрос за порогом.
+  Чтение баланса:
+    - assert: GET /balance возвращает balance, debtThreshold, canPlayMore
+    - assert: GET /balance без авторизации возвращает 401
+
+  # Лента событий для UI (статистика, отдельный экран истории).
+  # Поддерживает фильтрацию по периоду, всегда изолирована на текущего
+  # пользователя.
+  История баланса:
+    - assert: GET /balance/events возвращает события текущего пользователя в порядке возрастания createdAt
+    - assert: GET /balance/events с from/to возвращает только попавшие в диапазон
+    - assert: события чужих пользователей не возвращаются
+
+  # Любое изменение баланса (credit/debit) — снимок и событие в одной
+  # транзакции. Никаких «балансов без события» или «событий без
+  # обновления баланса».
+  Атомарность изменений:
+    - assert: после успешного исполнения лота balance_events.cause_id ссылается на lot_executions.id
+    - assert: после успешного post_game balance_events.cause_id ссылается на match_events.id

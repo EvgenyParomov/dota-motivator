@@ -1,0 +1,30 @@
+feature: Сферы жизни
+code: sphere
+description: >
+  Фиксированный enum из 8 сфер «колеса баланса жизни». Используется как
+  тег для лотов и срез для статистики. Не редактируется пользователем.
+  Живёт в shared/domain — доступен серверу и клиенту через packages/shared.
+
+  Коды сфер (порядок зафиксирован для UI):
+  health, career, finance, family, friends, growth, leisure, inner.
+
+  Нет specs-e2e — sphere это чистый доменный примитив, не имеет HTTP-эндпоинтов.
+
+specs-unit:
+
+  Sphere enum:
+    - assert: содержит ровно 8 предопределённых кодов сфер
+      description: |
+        Порядок зафиксирован — health, career, finance, family, friends,
+        growth, leisure, inner. Используется для стабильной выкладки
+        в радаре «колесо баланса».
+    - assert: parseSphere возвращает Sphere для каждого известного кода
+    - assert: parseSphere возвращает null для неизвестного кода
+
+  Sphere display:
+    - assert: getSphereLabel возвращает русскую метку для каждой сферы
+      description: |
+        Метки локализованы в shared/domain — для MVP ru-only.
+    - assert: getSphereIconKey возвращает уникальный ключ иконки для каждой сферы
+      description: |
+        Ключи стабильны — UI мапит их на SVG/lottie ассеты в shared/ui.

@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: dm
+      POSTGRES_PASSWORD: dm
+      POSTGRES_DB: dm
+    ports:
+      - "5432:5432"
+    volumes:
+      - dm-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio-root
+      MINIO_ROOT_PASSWORD: minio-root-pass
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - dm-minio:/data
+
+volumes:
+  dm-postgres:
+  dm-minio:

@@ -1,0 +1,43 @@
+feature: Главный экран
+code: dashboard
+description: >
+  Главная страница после онбординга. Показывает:
+  - Текущий баланс и статус (OK / в долгу / заблокирован).
+  - Активные лоты с быстрыми кнопками «выполнить» (canExecuteNow подсвечивает).
+  - Последние события (выполнения и матчи) — короткая лента.
+
+  Frontend-фича. Композирует данные из balance, lot, balance/events
+  через compose-уровень без прямой связи model-хуков (см. frontend.md).
+
+specs-unit:
+
+  Dashboard state domain:
+    - assert: getBalanceStatus возвращает ok когда balance > 0
+    - assert: getBalanceStatus возвращает debt когда -debtThreshold < balance <= 0
+    - assert: getBalanceStatus возвращает blocked когда balance <= -debtThreshold
+
+  useDashboardData (compose-hook):
+    - assert: композирует useBalance, useLots, useRecentEvents через compose-уровневую сборку
+      description: |
+        Каждый хук вызывается через свой compose, без прямого вызова
+        model-хуков из верхнего уровня (см. frontend.md, SRP хуков).
+    - assert: при ошибке любого источника возвращает частичные данные с пометками о неудаче
+      description: |
+        Не блокируем весь экран из-за одной упавшей секции — пусть
+        пользователь видит то, что есть.
+
+  Quick-execute compose:
+    - assert: tap на лот с canExecuteNow=true вызывает ExecuteLot и оптимистически обновляет баланс
+    - assert: tap на лот с canExecuteNow=false показывает причину отказа без сетевого запроса
+    - assert: при ошибке сервера откатывает оптимистическое обновление
+
+specs-e2e:
+
+  Загрузка экрана:
+    - assert: при открытии dashboard отрисовывает баланс, статус, лоты и ленту
+    - assert: при balance=0 показывает статус debt с предупреждением
+    - assert: при balance <= -debtThreshold показывает баннер блокировки
+
+  Быстрое выполнение:
+    - assert: успешное выполнение лота с dashboard обновляет баланс и ленту без перезагрузки
+    - assert: нарушение правила показывает уведомление с причиной

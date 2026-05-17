@@ -1,0 +1,50 @@
+feature: Онбординг
+code: onboarding
+description: >
+  Первичная настройка после первого Steam-входа. Шаги:
+  1. Задать порог долга (debtThreshold).
+  2. Задать стартовый баланс каток.
+  3. Создать минимум один лот.
+  4. Убедиться, что GSI-конфиг Dota записан в нужную папку.
+
+  Завершение онбординга проставляет profile.onboardingCompleted=true
+  и создаёт начальное событие баланса (InitialDeposit) через единую
+  серверную операцию CompleteOnboarding.
+
+  Frontend-фича: ui-флоу в Tauri-приложении. Серверная сторона уже покрыта
+  в profile (CompleteOnboardingUseCase) и balance (SetInitialBalance).
+
+specs-unit:
+
+  OnboardingState domain:
+    - assert: getOnboardingStep возвращает profile пока debtThreshold не задан
+    - assert: getOnboardingStep возвращает balance после задания debtThreshold
+    - assert: getOnboardingStep возвращает lots пока не создан ни один лот
+    - assert: getOnboardingStep возвращает gsi если GSI-конфиг не обнаружен
+    - assert: getOnboardingStep возвращает complete когда все шаги выполнены
+
+  GsiConfigCheck:
+    - assert: ensureGsiConfig возвращает ok если файл существует
+    - assert: ensureGsiConfig пишет файл если папка Dota найдена
+    - assert: ensureGsiConfig возвращает manual_required если папка Dota не найдена
+      description: |
+        Показываем пользователю инструкцию: «положи файл сюда вручную»
+        с кнопкой «скопировать содержимое».
+
+  useOnboardingFlow (compose-hook):
+    - assert: вычисляет текущий шаг по profile, lots и GSI-статусу
+    - assert: при переходе на финальный шаг вызывает CompleteOnboarding API
+    - assert: после завершения онбординга редиректит на dashboard
+
+specs-e2e:
+
+  Прохождение шагов:
+    - assert: новый пользователь после Steam-входа попадает на /onboarding
+    - assert: установка debtThreshold переключает на шаг balance
+    - assert: установка стартового баланса переключает на шаг lots
+    - assert: создание первого лота переключает на шаг gsi
+    - assert: успешный GSI-чек переключает на complete и редиректит на /dashboard
+
+  Возврат к онбордингу:
+    - assert: пользователь с onboardingCompleted=false при попытке открыть /dashboard редиректится на /onboarding
+    - assert: пользователь с onboardingCompleted=true при попытке открыть /onboarding редиректится на /dashboard

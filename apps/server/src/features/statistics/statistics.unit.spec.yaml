@@ -1,0 +1,18 @@
+feature: Статистика
+code: statistics-unit
+description: >
+  Уточнения к statistics.spec.yaml. Парсинг period и доменная функция
+  rangeForPeriod (week/month/all).
+
+  HTTP сценарии чтения агрегатов — в specs/statistics.spec.yaml.
+
+specs-unit:
+
+  # parsePeriod / rangeForPeriod в statistics/domain/period.ts.
+  # Week — с понедельника UTC, month — с первого числа UTC, all — с
+  # createdAt пользователя. Невалидный period — доменная ошибка.
+  Period parsing:
+    - assert: period=week возвращает диапазон с понедельника текущей недели UTC
+    - assert: period=month возвращает диапазон с первого числа текущего месяца UTC
+    - assert: period=all возвращает диапазон от createdAt пользователя до сейчас
+    - assert: невалидный period возвращает доменную ошибку InvalidPeriod

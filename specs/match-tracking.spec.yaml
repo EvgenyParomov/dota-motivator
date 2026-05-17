@@ -1,0 +1,41 @@
+feature: Трекинг матчей Dota
+code: match-tracking
+description: >
+  Детекция матчей Dota через Game State Integration (GSI). Tauri-клиент
+  (Rust) поднимает HTTP-листенер на localhost; Dota шлёт JSON с фазами
+  матча. Клиент репортит значимые события (pre_game, post_game) на сервер.
+
+  Сервер списывает 1 катку при post_game через BalanceMutator, идемпотентно
+  по matchId. Сервер также отдаёт решение play-decision (allow/block) для
+  фазы pre_game — клиент использует его для блокировки запуска
+  (см. block.spec).
+
+  Серверная часть тестируется в TypeScript (этот spec). Rust GSI-листенер
+  и парсинг JSON — тестируются через cargo, вне области specward.
+
+  Парсинг GSI-события и распознавание lobbyType — в match-tracking.unit.spec.yaml.
+
+specs-e2e:
+
+  # POST /match-events с phase=post_game дебетует 1 катку и сохраняет
+  # MatchPlayed для статистики. Дубль с тем же matchId не списывает
+  # повторно (GSI может прислать дубль). Practice lobby не считается
+  # «настоящей» каткой — но событие сохраняется для статистики.
+  Сообщение об окончании матча:
+    - assert: POST /match-events с phase=post_game списывает 1 катку и возвращает обновлённый баланс
+    - assert: повторный POST с тем же matchId возвращает успех без повторного списания
+    - assert: POST с lobbyType practice не списывает катку, но событие сохраняется
+    - assert: POST /match-events без авторизации возвращает 401
+    - assert: match_events содержит matchId, startedAt, endedAt, lobbyType после успешного post_game
+
+  # GET /match-events/play-decision вызывается клиентом перед запуском
+  # Dota. Возвращает allow/block по правилу canPlayMore(balance, debtThreshold).
+  Запрос решения о матче:
+    - assert: GET /match-events/play-decision при balance > -debtThreshold возвращает allow
+    - assert: GET /match-events/play-decision при balance <= -debtThreshold возвращает block с причиной
+    - assert: GET /match-events/play-decision без авторизации возвращает 401
+
+  # GET /match-events — лента матчей для статистики и аудита.
+  История матчей:
+    - assert: GET /match-events возвращает матчи текущего пользователя
+    - assert: матчи чужих пользователей не возвращаются

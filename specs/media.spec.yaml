@@ -1,0 +1,25 @@
+feature: Загрузка медиа
+code: media
+description: >
+  Загрузка иконок/картинок для лотов в MinIO через presigned URLs —
+  клиент загружает напрямую в bucket, минуя сервер. Сервер выдаёт
+  presigned-ссылки и валидирует параметры (mime, размер).
+
+  Объекты не публичные: для отображения сервер выдаёт presigned GET URL
+  с TTL ~1 час. Формируется через порт MediaUrlResolver при сериализации
+  Lot.iconUrl (см. lot.spec).
+
+  Валидация mime/размера, генерация уникального mediaKey и поведение
+  MediaUrlResolver — в media.unit.spec.yaml.
+
+specs-e2e:
+
+  # POST /media/presign возвращает presigned PUT URL и mediaKey.
+  # Клиент использует PUT URL для прямой загрузки в MinIO, а mediaKey
+  # сохраняет в Lot.iconMediaKey. Валидация (mime allowlist, размер
+  # <= 1 МБ) — на границе.
+  Запрос пресайна:
+    - assert: POST /media/presign с валидными параметрами возвращает uploadUrl и mediaKey
+    - assert: POST /media/presign с запрещённым mimeType возвращает 400
+    - assert: POST /media/presign с size больше лимита возвращает 413
+    - assert: POST /media/presign без авторизации возвращает 401

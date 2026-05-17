@@ -1,0 +1,28 @@
+feature: Лоты
+code: lot-unit
+description: >
+  Уточнения к lot.spec.yaml. Доменная валидация полей лота и правил.
+
+  HTTP сценарии CRUD и поведение списка с computed-полями — в
+  specs/lot.spec.yaml.
+
+specs-unit:
+
+  # validateAndNormalize в lot/domain/lot.ts. Бизнес-ограничения:
+  # MAX_REWARD=10 (sanity: одно действие не должно компенсировать десятки игр),
+  # конфликт OneTime+DailyLimit (бессмысленно одновременно).
+  Lot domain:
+    - assert: лот с пустым name отклоняется
+    - assert: лот с reward <= 0 отклоняется
+    - assert: лот с reward больше MAX_REWARD (10) отклоняется
+    - assert: лот без правил валиден
+    - assert: лот с конфликтующими правилами OneTime и DailyLimit отклоняется
+
+  # validateRules — отдельная проверка корректности каждого правила.
+  # Используется и при создании лота, и при PATCH (защита от ручного
+  # изменения JSON через API).
+  Rule validation:
+    - assert: DailyLimit с count <= 0 отклоняется
+    - assert: WeeklyLimit с count <= 0 отклоняется
+    - assert: Cooldown с отрицательной продолжительностью отклоняется
+    - assert: OneTime не имеет параметров

@@ -1,0 +1,65 @@
+feature: Аутентификация
+code: auth
+description: >
+  Вход через Steam (OpenID 2.0). Регистрации как отдельного шага нет — первая
+  успешная авторизация автоматически создаёт пользователя. Идентификатор —
+  steamId64; personaName и avatarUrl подтягиваются из Steam Web API и
+  обновляются при каждом входе.
+
+  Управление сессиями — better-auth, token-based (не cookie): Tauri открывает
+  системный браузер для OpenID-потока и не может прозрачно делить cookie с
+  webview. Токен передаётся в Authorization: Bearer.
+
+  Поток в Tauri: клиент поднимает локальный HTTP-листенер, сервер редиректит
+  на него после успешного callback'а с handoff-токеном. Поэтому client_callback
+  ограничен allowlist'ом http://localhost:*.
+
+  Доменные детали Steam OpenID (build/parse URL, верификация подписи,
+  client-callback allowlist) описаны в auth.unit.spec.yaml.
+
+specs-e2e:
+
+  # Пользователь нажимает «Войти через Steam» в десктопном клиенте.
+  # Клиент поднимает локальный листенер и просит сервер начать поток —
+  # сервер генерирует state, кладёт его в БД и редиректит в Steam.
+  Старт потока:
+    - assert: GET /auth/steam/start с разрешённым client_callback возвращает 302 на steamcommunity.com
+    - assert: возвращённый redirect содержит свежий state, ранее не существовавший в auth_states
+    - assert: client_callback вне allowlist отклоняется с 400 и state не создаётся
+
+  # Steam редиректит на /auth/steam/callback с подписью. Сервер
+  # проверяет подпись через check_authentication у Steam, валидирует
+  # state как one-time, и редиректит обратно на client_callback с
+  # handoff-токеном.
+  Возврат из Steam:
+    - assert: callback с валидной подписью и валидным state создаёт сессию и редиректит на client_callback
+    - assert: callback с битой подписью отклоняется и сессия не создаётся
+    - assert: callback с неизвестным state отклоняется
+    - assert: повторное использование того же state отклоняется (one-time)
+
+  # Первый успешный callback регистрирует пользователя и инициализирует
+  # его профиль с дефолтами. Сторонние счётчики (balance) подключаются
+  # на онбординге.
+  Первый вход:
+    - assert: создаётся запись пользователя со steamId, personaName, avatarUrl из Steam
+    - assert: создаётся профиль с debtThreshold=0 и onboardingCompleted=false
+
+  # Тот же steamId не плодит дубликаты — обновляются persona/avatar и
+  # lastLoginAt существующего пользователя.
+  Повторный вход:
+    - assert: второй callback с тем же steamId не создаёт второго пользователя
+    - assert: persona и avatar обновляются из Steam при каждом callback
+    - assert: профиль не пересоздаётся
+
+  # Защищённые эндпоинты требуют Bearer-токен. Истёкший или отозванный
+  # токен не пропускает.
+  Использование сессии:
+    - assert: защищённый эндпоинт без Authorization возвращает 401
+    - assert: защищённый эндпоинт с валидным Bearer возвращает данные пользователя
+    - assert: истёкший Bearer-токен возвращает 401
+
+  # sign-out удаляет запись сессии целиком (не помечает invalidated).
+  # После sign-out любой запрос с тем же токеном — 401.
+  Выход:
+    - assert: POST /auth/sign-out с валидным Bearer инвалидирует сессию
+    - assert: запрос с тем же токеном после sign-out возвращает 401

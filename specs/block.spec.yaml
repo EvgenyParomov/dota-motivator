@@ -1,0 +1,52 @@
+feature: Блокировка Dota
+code: block
+description: >
+  Tauri-клиент убивает процесс dota2.exe, когда баланс ниже порога
+  и Dota запущена. Решение «убивать» принимает сервер
+  (см. CheckPlayDecisionUseCase в match-tracking).
+
+  Spec покрывает TypeScript-оркестратор на стороне клиента: подписка
+  на GSI-события через Tauri-event, запрос play-decision у сервера,
+  вызов Tauri-команд killDota, отображение причины блокировки.
+  TerminateProcess и sysinfo-мониторинг реализованы в Rust — тестируются
+  через cargo, не specward.
+
+specs-unit:
+
+  BlockOrchestrator:
+    - assert: на фазе pre_game запрашивает play-decision у сервера
+    - assert: при ответе block вызывает Tauri-команду killDota
+    - assert: при ответе allow ничего не делает
+    - assert: при ошибке сети применяет fail-safe allow и логирует ошибку
+      description: |
+        Если сервер недоступен — не блокируем. Это лучше, чем DoS от
+        собственного приложения. Психологическая цель сохраняется:
+        пользователь видит, что трекинг сломан, и сам решает.
+
+  BlockReasonFormatter:
+    - assert: возвращает человекочитаемый текст с текущим балансом и порогом
+      description: |
+        Например: «Баланс −3, порог 2. Сначала выполни лот».
+        Используется в overlay-уведомлении после kill.
+
+  FallbackProcessWatcher:
+    - assert: при обнаружении dota2.exe без активного GSI запрашивает play-decision и принимает решение
+      description: |
+        На случай, если пользователь удалил GSI-конфиг. sysinfo-поллинг
+        в Rust раз в 1-2 секунды; TS-сторона получает уведомление через
+        Tauri-event и реагирует тем же оркестратором.
+
+  KillNotification:
+    - assert: показывает оверлей с причиной блокировки и текущим балансом
+    - assert: оверлей закрывается явным действием пользователя
+      description: |
+        Не autodismiss — нужно зафиксировать момент сознательного
+        столкновения с правилом.
+
+specs-e2e:
+
+  Поток блокировки (с моком сервера и Tauri-команд):
+    - assert: pre_game event при balance ниже порога вызывает killDota и показывает оверлей
+    - assert: pre_game event при достаточном балансе не вызывает killDota
+    - assert: ошибка сети при запросе play-decision не блокирует игру
+    - assert: повторный pre_game для того же matchId не вызывает killDota дважды

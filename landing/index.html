@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dota Motivator — отслеживай матчи, держи себя в рамках</title>
+    <meta
+      name="description"
+      content="Десктоп-приложение для игроков Dota 2: учитывает каждый матч, ведёт баланс, помогает не уйти в загул."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body { font-family: 'Inter', system-ui, sans-serif; }
+      .gradient-text {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-zinc-950 text-zinc-100 antialiased">
+    <header class="border-b border-zinc-900">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <div class="flex items-center gap-2">
+          <div class="flex size-9 items-center justify-center rounded-lg bg-orange-500/20 text-lg font-bold text-orange-400">
+            DM
+          </div>
+          <span class="text-lg font-semibold">Dota Motivator</span>
+        </div>
+        <a
+          href="#download"
+          class="rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-zinc-950 transition hover:bg-orange-400"
+        >
+          Скачать
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="mx-auto max-w-6xl px-6 py-20 lg:py-28">
+        <div class="max-w-3xl">
+          <p class="mb-4 text-sm font-medium uppercase tracking-wide text-orange-400">
+            для тех, кто хочет играть осознанно
+          </p>
+          <h1 class="text-5xl font-bold leading-tight tracking-tight lg:text-6xl">
+            Отслеживай матчи. <br />
+            <span class="gradient-text">Держи себя в рамках.</span>
+          </h1>
+          <p class="mt-6 text-lg leading-relaxed text-zinc-400">
+            Dota Motivator подключается к Dota 2 через Game State Integration, считает каждый матч,
+            ведёт виртуальный баланс и не даёт зайти в катку, когда уже пора отдохнуть.
+          </p>
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              id="download"
+              href="https://github.com/EvgenyParomov/dota-motivator/releases/latest"
+              class="rounded-md bg-orange-500 px-6 py-3 text-base font-semibold text-zinc-950 transition hover:bg-orange-400"
+            >
+              Скачать для Windows
+            </a>
+            <a
+              href="https://github.com/EvgenyParomov/dota-motivator"
+              class="rounded-md border border-zinc-700 px-6 py-3 text-base font-semibold text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-900"
+            >
+              GitHub
+            </a>
+          </div>
+          <p class="mt-3 text-xs text-zinc-500">Windows 10/11 · MacOS и Linux — в планах</p>
+        </div>
+      </section>
+
+      <section class="border-y border-zinc-900 bg-zinc-900/30">
+        <div class="mx-auto grid max-w-6xl gap-8 px-6 py-20 md:grid-cols-3">
+          <article>
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+              <svg class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m0 10V7m0 10a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold">Автоматический учёт</h3>
+            <p class="text-sm text-zinc-400">
+              GSI ловит начало и конец матча, без ручного ввода. Видишь всю историю своих игр.
+            </p>
+          </article>
+          <article>
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+              <svg class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold">Виртуальный баланс</h3>
+            <p class="text-sm text-zinc-400">
+              Задай стартовый баланс и долговой порог. Каждая игра меняет состояние — наглядно и честно.
+            </p>
+          </article>
+          <article>
+            <div class="mb-4 flex size-12 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400">
+              <svg class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold">Блокировка катки</h3>
+            <p class="text-sm text-zinc-400">
+              Перешёл долговой порог — игра не начнётся. Меньше тильта, больше дисциплины.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-6xl px-6 py-20">
+        <h2 class="text-3xl font-bold tracking-tight">Как это работает</h2>
+        <ol class="mt-10 space-y-6">
+          <li class="flex gap-4">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-zinc-950">
+              1
+            </span>
+            <div>
+              <h3 class="font-semibold">Авторизация через Steam</h3>
+              <p class="mt-1 text-sm text-zinc-400">Один клик — подключаешь свой Steam-аккаунт.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-zinc-950">
+              2
+            </span>
+            <div>
+              <h3 class="font-semibold">Установка GSI-конфига</h3>
+              <p class="mt-1 text-sm text-zinc-400">
+                Приложение само находит установку Dota 2 и кладёт нужный конфиг.
+              </p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-zinc-950">
+              3
+            </span>
+            <div>
+              <h3 class="font-semibold">Играй</h3>
+              <p class="mt-1 text-sm text-zinc-400">
+                Каждый матч автоматически попадает в историю, баланс пересчитывается.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="border-t border-zinc-900">
+      <div
+        class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-sm text-zinc-500 md:flex-row"
+      >
+        <p>© 2026 Dota Motivator. Не аффилирован с Valve.</p>
+        <div class="flex gap-6">
+          <a
+            href="https://github.com/EvgenyParomov/dota-motivator"
+            class="transition hover:text-zinc-300"
+            >GitHub</a
+          >
+          <a
+            href="https://api.dota-monitor.paromovevg.ru/health"
+            class="transition hover:text-zinc-300"
+            >API</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
