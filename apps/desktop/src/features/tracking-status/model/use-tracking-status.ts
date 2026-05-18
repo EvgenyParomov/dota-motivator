@@ -22,18 +22,11 @@ const probeServer = async (): Promise<Status> => {
 
 const probeListener = async (): Promise<{ status: Status; port: number }> => {
   if (!isTauri()) return { status: 'unknown', port: 0 };
-  let port = 0;
   try {
-    port = await tauriInvoke<number>('get_gsi_port');
+    const port = await tauriInvoke<number>('get_gsi_port');
+    return { status: port > 0 ? 'ok' : 'down', port };
   } catch {
     return { status: 'down', port: 0 };
-  }
-  if (port === 0) return { status: 'down', port: 0 };
-  try {
-    await fetch(`http://127.0.0.1:${port}/`, { method: 'GET' });
-    return { status: 'ok', port };
-  } catch {
-    return { status: 'down', port };
   }
 };
 
