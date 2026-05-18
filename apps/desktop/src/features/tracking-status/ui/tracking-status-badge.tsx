@@ -35,7 +35,7 @@ export const TrackingStatusBadge = () => {
       />
       <Pill
         status={s.listener}
-        labelOk="GSI :7383"
+        labelOk={`GSI :${s.listenerPort}`}
         labelDown="GSI offline"
         title="Локальный listener Dota GSI событий"
       />

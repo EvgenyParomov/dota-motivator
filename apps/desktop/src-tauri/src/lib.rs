@@ -43,6 +43,7 @@ pub fn run() {
             dota_process::kill_dota,
             gsi::ensure_gsi_config,
             gsi::start_gsi_listener,
+            gsi::get_gsi_port,
             auth_listener::start_auth_callback_listener,
             auth_listener::set_server_url,
         ])
