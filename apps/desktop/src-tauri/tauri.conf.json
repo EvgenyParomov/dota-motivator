@@ -25,9 +25,22 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": []
+    "createUpdaterArtifacts": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
   "plugins": {
-    "opener": {}
+    "opener": {},
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDQTQzOTEzRjMxMkY1RTMKUldUajlSTHpFem1rL09WMXN3QWhydDFUY2RLcm1NUG9TdmkwYzNmNk9idVNwZjB4cGl2UGJFcE0K",
+      "endpoints": [
+        "https://github.com/EvgenyParomov/dota-motivator/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

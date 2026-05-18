@@ -5,6 +5,7 @@ import { SidebarNav, SidebarNavItem } from '@/shared/ui/sidebar-nav';
 import { BlockOrchestrator } from '../features/block/compose/block-orchestrator';
 import { UserMenuCompose } from '../features/auth/compose/user-menu.compose';
 import { TrackingStatusBadge } from '../features/tracking-status/ui/tracking-status-badge';
+import { UpdateBanner } from '../features/updater/ui/update-banner';
 
 const navItems = (
   <>
@@ -22,6 +23,7 @@ export const Layout = () => (
     overlay={
       <>
         <TrackingStatusBadge />
+        <UpdateBanner />
         <BlockOrchestrator />
       </>
     }

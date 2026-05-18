@@ -13,6 +13,7 @@ pub fn run() {
     tracing_subscriber::fmt::init();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(AppState {
             server_base_url: Mutex::new(
                 std::env::var("DM_SERVER_URL").unwrap_or_else(|_| "http://localhost:4000".into()),
