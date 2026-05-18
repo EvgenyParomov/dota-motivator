@@ -22,6 +22,35 @@ export const useBlockOrchestrator = (): BlockOrchestratorState => {
 
   useEffect(() => {
     if (!isTauri()) return;
+    let cancelled = false;
+    let prevRunning = false;
+    const interval = setInterval(async () => {
+      try {
+        const running = await tauriInvoke<boolean>('is_dota_running');
+        if (running && !prevRunning && !cancelled) {
+          try {
+            const decision = await fetchPlayDecision();
+            if (!decision.allowed) {
+              await tauriInvoke<number>('kill_dota');
+              setOverlay({ open: true, reason: decision.reason });
+            }
+          } catch {
+            /* fail-safe: don't block on network errors */
+          }
+        }
+        prevRunning = running;
+      } catch {
+        /* ignore */
+      }
+    }, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isTauri()) return;
     let unlisten: (() => void) | null = null;
     void tauriInvoke<number>('start_gsi_listener').catch(() => {});
 
