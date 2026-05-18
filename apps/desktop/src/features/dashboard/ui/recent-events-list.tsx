@@ -15,6 +15,24 @@ const labelFor = (e: BalanceEvent): string => {
   return CAUSE_LABELS[e.causeKind] ?? e.description;
 };
 
+const TIME_FMT = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' });
+const DATE_FMT = new Intl.DateTimeFormat('ru-RU', {
+  day: '2-digit',
+  month: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
+const formatWhen = (iso: string): string => {
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  return sameDay ? TIME_FMT.format(d) : DATE_FMT.format(d);
+};
+
 type Props = {
   events: BalanceEvent[];
   emptyMessage?: string;
@@ -36,12 +54,17 @@ export const RecentEventsList = ({ events, emptyMessage = 'События пок
         {events.map((e) => (
           <div
             key={e.id}
-            className="flex items-center justify-between border-b border-border/50 py-2 last:border-0"
+            className="flex items-center justify-between gap-3 border-b border-border/50 py-2 last:border-0"
           >
-            <span className="text-sm">{labelFor(e)}</span>
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate text-sm">{labelFor(e)}</span>
+              <span className="text-muted-foreground text-xs tabular-nums">
+                {formatWhen(e.createdAt)}
+              </span>
+            </div>
             <span
               className={cn(
-                'text-sm font-medium tabular-nums',
+                'shrink-0 text-sm font-medium tabular-nums',
                 e.type === 'credit' ? 'text-success' : 'text-destructive',
               )}
             >
