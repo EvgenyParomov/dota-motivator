@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 type Props = {
   balance: ReactNode;
+  actions?: ReactNode;
   quickLotsTitle?: string;
   quickLots: ReactNode;
   recentTitle?: string;
@@ -10,6 +11,7 @@ type Props = {
 
 export const DashboardLayout = ({
   balance,
+  actions,
   quickLotsTitle = 'Быстрое выполнение',
   quickLots,
   recentTitle = 'Последние события',
@@ -23,6 +25,7 @@ export const DashboardLayout = ({
       </p>
     </header>
     {balance}
+    {actions}
     <section className="flex flex-col gap-3">
       <h2 className="text-lg font-semibold">{quickLotsTitle}</h2>
       {quickLots}

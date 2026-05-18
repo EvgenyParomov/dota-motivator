@@ -8,6 +8,7 @@ import { LotCardCompose } from '../../lot/compose/lot-card.compose';
 import { useRecentEvents } from '../model/use-recent-events';
 import { DashboardLayout } from '../ui/dashboard-layout';
 import { RecentEventsList } from '../ui/recent-events-list';
+import { ManualMatchButton } from '../../match-tracking/ui/manual-match-button';
 
 export const DashboardRoute = () => {
   const { Widget } = useBalanceWidget();
@@ -23,6 +24,7 @@ export const DashboardRoute = () => {
   return (
     <DashboardLayout
       balance={<Widget />}
+      actions={<ManualMatchButton />}
       quickLots={
         lots.data && lots.data.length === 0 ? (
           <EmptyState>Нет активных лотов.</EmptyState>

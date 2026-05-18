@@ -18,6 +18,9 @@ export const useReportMatch = () => {
   return useMutation({
     mutationFn: (input: ReportInput) =>
       api<ReportResult>('/match-events', { method: 'POST', body: JSON.stringify(input) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['balance'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['balance'] });
+      qc.invalidateQueries({ queryKey: ['recent-events'] });
+    },
   });
 };
