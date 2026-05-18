@@ -16,11 +16,11 @@ import type {
 const descriptionFor = (cause: CreditCause | DebitCause): string => {
   switch (cause.kind) {
     case 'initial-deposit':
-      return 'initial deposit';
+      return 'стартовый баланс';
     case 'lot-execution':
-      return 'lot reward';
+      return 'выполнен лот';
     case 'match':
-      return 'match played';
+      return 'сыграна катка';
   }
 };
 

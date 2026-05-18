@@ -27,7 +27,7 @@ test.describe('Главный экран', () => {
           type: 'credit',
           delta: 1,
           causeKind: 'lot-execution',
-          description: 'lot reward',
+          description: 'выполнен лот',
           createdAt: new Date().toISOString(),
         },
       ],
@@ -35,6 +35,6 @@ test.describe('Главный экран', () => {
     await page.goto('/dashboard');
     await expect(page.getByText('Баланс')).toBeVisible();
     await expect(page.getByText('Пробежка')).toBeVisible();
-    await expect(page.getByText('lot reward')).toBeVisible();
+    await expect(page.getByText('выполнен лот')).toBeVisible();
   });
 });
