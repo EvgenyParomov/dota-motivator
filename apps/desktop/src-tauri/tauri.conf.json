@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Dota Motivator",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "identifier": "dev.dotamotivator.app",
   "build": {
     "frontendDist": "../dist",

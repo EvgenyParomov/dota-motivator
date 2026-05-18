@@ -2,6 +2,15 @@ import { Card, CardContent } from '@/shared/ui/card';
 import { cn } from '@/shared/lib/utils';
 import type { BalanceEvent } from '../model/use-recent-events';
 
+const CAUSE_LABELS: Record<string, string> = {
+  'initial-deposit': 'стартовый баланс',
+  'lot-execution': 'выполнен лот',
+  match: 'сыграна катка',
+};
+
+const labelFor = (e: BalanceEvent): string =>
+  CAUSE_LABELS[e.causeKind] ?? e.description;
+
 type Props = {
   events: BalanceEvent[];
   emptyMessage?: string;
@@ -25,7 +34,7 @@ export const RecentEventsList = ({ events, emptyMessage = 'События пок
             key={e.id}
             className="flex items-center justify-between border-b border-border/50 py-2 last:border-0"
           >
-            <span className="text-sm">{e.description}</span>
+            <span className="text-sm">{labelFor(e)}</span>
             <span
               className={cn(
                 'text-sm font-medium tabular-nums',
