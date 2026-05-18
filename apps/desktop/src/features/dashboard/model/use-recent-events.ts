@@ -6,8 +6,10 @@ export type BalanceEvent = {
   type: 'credit' | 'debit';
   delta: number;
   causeKind: string;
+  causeId: string | null;
   description: string;
   createdAt: string;
+  lotName: string | null;
 };
 
 export const useRecentEvents = (limit = 10) =>

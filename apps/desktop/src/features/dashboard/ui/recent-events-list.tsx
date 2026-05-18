@@ -8,8 +8,12 @@ const CAUSE_LABELS: Record<string, string> = {
   match: 'сыграна катка',
 };
 
-const labelFor = (e: BalanceEvent): string =>
-  CAUSE_LABELS[e.causeKind] ?? e.description;
+const labelFor = (e: BalanceEvent): string => {
+  if (e.causeKind === 'lot-execution' && e.lotName) {
+    return `выполнен лот: ${e.lotName}`;
+  }
+  return CAUSE_LABELS[e.causeKind] ?? e.description;
+};
 
 type Props = {
   events: BalanceEvent[];

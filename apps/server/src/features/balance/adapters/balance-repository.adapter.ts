@@ -3,7 +3,12 @@ import { inject, injectable } from 'inversify';
 import type { UserId } from '@dm/shared';
 import { DrizzleTxManager } from '../../../shared/adapters/drizzle-tx-manager.js';
 import type { Transaction } from '../../../shared/domain/transaction.js';
-import { balances, balanceEvents } from '../../../shared/adapters/db/schema/index.js';
+import {
+  balances,
+  balanceEvents,
+  lotExecutions,
+  lots,
+} from '../../../shared/adapters/db/schema/index.js';
 import { BalanceRepository } from '../application/ports/balance-repository.js';
 import type {
   BalanceCauseKind,
@@ -13,7 +18,10 @@ import type {
 } from '../domain/balance-event.js';
 import { DomainError } from '../../../shared/lib/errors.js';
 
-const toEvent = (row: typeof balanceEvents.$inferSelect): BalanceEventEntity => ({
+const toEvent = (
+  row: typeof balanceEvents.$inferSelect,
+  lotName: string | null = null,
+): BalanceEventEntity => ({
   id: row.id,
   userId: row.userId,
   type: row.type as BalanceEventType,
@@ -22,6 +30,7 @@ const toEvent = (row: typeof balanceEvents.$inferSelect): BalanceEventEntity => 
   causeId: row.causeId,
   description: row.description,
   createdAt: row.createdAt,
+  lotName,
 });
 
 class BalanceRowMissingError extends DomainError {
@@ -103,10 +112,12 @@ export class DrizzleBalanceRepository extends BalanceRepository {
     if (range?.to) conds.push(lte(balanceEvents.createdAt, range.to));
     const rows = await this.txManager
       .resolve()
-      .select()
+      .select({ event: balanceEvents, lotName: lots.name })
       .from(balanceEvents)
+      .leftJoin(lotExecutions, eq(balanceEvents.causeId, lotExecutions.id))
+      .leftJoin(lots, eq(lotExecutions.lotId, lots.id))
       .where(and(...conds))
       .orderBy(asc(balanceEvents.createdAt));
-    return rows.map(toEvent);
+    return rows.map((r) => toEvent(r.event, r.lotName));
   }
 }

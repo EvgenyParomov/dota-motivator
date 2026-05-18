@@ -12,6 +12,7 @@ export type BalanceEventEntity = {
   causeId: string | null;
   description: string;
   createdAt: Date;
+  lotName: string | null;
 };
 
-export type NewBalanceEvent = Omit<BalanceEventEntity, 'createdAt'>;
+export type NewBalanceEvent = Omit<BalanceEventEntity, 'createdAt' | 'lotName'>;
