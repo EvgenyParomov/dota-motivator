@@ -17,3 +17,4 @@ test-results
 src-tauri/target
 src-tauri/gen
 .deploy-key
+**/tsconfig.tsbuildinfo
