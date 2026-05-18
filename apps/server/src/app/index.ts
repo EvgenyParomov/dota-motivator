@@ -18,6 +18,7 @@ import {
 import { buildMediaRouter } from '../features/media/adapters/http.router.js';
 import { buildMatchTrackingRouter } from '../features/match-tracking/adapters/http.router.js';
 import { buildStatisticsRouter } from '../features/statistics/adapters/http.router.js';
+import { buildReleasesRouter } from '../features/releases/http.router.js';
 
 export const buildApp = (container: Container) => {
   const auth = container.get<Auth>(AuthToken);
@@ -68,6 +69,7 @@ export const buildApp = (container: Container) => {
   app.use('/media', buildMediaRouter(container));
   app.use('/match-events', buildMatchTrackingRouter(container));
   app.use('/statistics', buildStatisticsRouter(container));
+  app.use('/releases', buildReleasesRouter());
 
   app.use(httpErrorHandler);
 
